@@ -1,64 +1,93 @@
 'use strict'
 
+const $arenas = document.querySelector('.arenas')
+const $randomBtn = document.querySelector('.button')
+
 const player1 = {
-    name: 'KITANA',
-    hp: 100,
-    img: 'assets/characters/kitana.gif',
+    player: 1,
+    name: 'SCORPION',
+    hp: 80,
+    img: 'assets/characters/scorpion.gif',
     weapon: ['fists'],
     attack: function() {
-        console.log(player1.name + ' Fight...')
+        console.log(this.name + ' - Fight...')
     }
 }
 
 player1.attack()
 
 const player2 = {
-    name: 'SONYA',
+    player: 2,
+    name: 'SUB-ZERO',
     hp: 100,
-    img: 'assets/characters/sonya.gif',
+    img: 'assets/characters/subzero.gif',
     weapon: ['legs'],
     attack: function() {
-        console.log(player2.name + ' Fight...')
+        console.log(this.name + ' - Fight...')
     }
 }
 
 player2.attack()
 
-function createPlayer(player, name, hp, img) {
-    const $arenas = document.querySelector('.arenas')
 
-    function addClass(classname) {
-        $player.classList.add(classname)
+function createElement(tag, className) {
+    const $tag = document.createElement(tag)
+
+    if(className) {
+        $tag.classList.add(className)
     }
     
-    const $player = document.createElement('div')
-    addClass(player)
+    return $tag
+}
 
-    const $progressBar = document.createElement('div')
-    $progressBar.classList.add('progressbar')
+function createPlayer(playerNum) {
 
-    const $life = document.createElement('div') 
-    $life.classList.add('life')
+    const $player = createElement('div', 'player'+playerNum.player)
+    const $progressBar = createElement('div', 'progressbar')
+    const $life = createElement('div', 'life')
+    const $name = createElement('div', 'name')
+    const $character = createElement('div', 'character')
+    const $imgCharacter = createElement('img')
 
-    const $name = document.createElement('div')
-    $name.classList.add('name')
-
-    const $character = document.createElement('div')
-    $character.classList.add('character')
-
-    const $imgCharacter = document.createElement('img')
-
-    $arenas.appendChild($player)
     $player.appendChild($progressBar)
     $player.appendChild($character)
     $progressBar.appendChild($life)
     $progressBar.appendChild($name)
     $character.appendChild($imgCharacter)
 
-    $life.style.width = hp + '%'
-    $name.innerText = name
-    $imgCharacter.setAttribute('src', img)
+    $life.style.width = playerNum.hp + '%'
+    $name.innerText = playerNum.name
+    $imgCharacter.setAttribute('src', playerNum.img)
+
+    return $player
 }
 
-createPlayer('player1', player1.name, player1.hp, player1.img)
-createPlayer('player2', player2.name, player2.hp, player2.img)
+function changeHP(player) {
+    const $playerLife = document.querySelector('.player'+ player.player +' .life')
+    player.hp -= Math.ceil(Math.random() * 20)
+    $playerLife.style.width = player.hp + '%'
+    console.log(player.hp)
+
+    if(player.hp <= 0) {
+        $playerLife.style.width = 0
+        $randomBtn.disabled = true
+        if(player.hp > 0) {
+            $arenas.appendChild(playerWin(player.name))
+        }
+    }
+}
+
+function playerWin(name) {
+    const $winTitle = createElement('div', 'winTitle')
+    $winTitle.innerText = name + ' win'
+
+    return $winTitle
+}
+
+$randomBtn.addEventListener('click', function() {
+    changeHP(player1)
+    changeHP(player2)
+})
+
+$arenas.appendChild(createPlayer(player1))
+$arenas.appendChild(createPlayer(player2))
