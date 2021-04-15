@@ -1,7 +1,13 @@
 'use strict'
 
 const $arenas = document.querySelector('.arenas')
-const $randomBtn = document.querySelector('.button')
+const $form = document.querySelector('.control')
+const HIT = {
+    head: 30,
+    body: 25,
+    foot: 20,
+}
+const ATTACK = ['head', 'body', 'foot'];
 
 const player1 = {
     player: 1,
@@ -9,10 +15,10 @@ const player1 = {
     hp: 100,
     img: 'assets/characters/scorpion.gif',
     weapon: ['fists'],
-    attack: attack,
-    changeHP: changeHP, 
-    elHP: elHP,
-    renderHP: renderHP
+    attack,
+    changeHP, 
+    elHP,
+    renderHP
 }
 
 player1.attack()
@@ -23,10 +29,10 @@ const player2 = {
     hp: 100,
     img: 'assets/characters/subzero.gif',
     weapon: ['legs'],
-    attack: attack,
-    changeHP: changeHP,
-    elHP: elHP,
-    renderHP: renderHP
+    attack,
+    changeHP,
+    elHP,
+    renderHP
 }
 
 player2.attack()
@@ -110,18 +116,39 @@ function createReloadButton() {
         window.location.reload()
     })
 
+    $arenas.appendChild($reloadWrap)
+
     return $reloadBtn
 }
 
-$randomBtn.addEventListener('click', function() {
+$arenas.appendChild(createPlayer(player1))
+$arenas.appendChild(createPlayer(player2))
+
+$form.addEventListener('submit', function(e) {
+    e.preventDefault()
+    const enemy = enemyAttack()
+
+    const attack = {}
+
+    for (let item of $form) {
+        if(item.checked && item.name === 'hit') {
+            attack.value = getRandom(HIT[item.value])
+            attack.hit = item.value
+        }
+        if(item.checked && item.name === 'defence') {
+            attack.defence = item.value
+        }
+        item.checked = false
+    }
+
     player1.changeHP(getRandom(20))
     player2.changeHP(getRandom(20))
     player1.renderHP()
     player2.renderHP()
 
     if(player1.hp === 0 || player2.hp === 0) {
-        $randomBtn.disabled = true
-        $arenas.appendChild(createReloadButton())
+        $form.style.display = 'none'
+        createReloadButton()
     }
 
     if(player1.hp === 0 && player1.hp < player2.hp) {
@@ -133,7 +160,17 @@ $randomBtn.addEventListener('click', function() {
             if(player1.hp === 0 && player2.hp === 0) {
                 $arenas.appendChild(showResult())
         }
+    console.log('enemy', enemy)
+    console.log('me', attack)
 })
 
-$arenas.appendChild(createPlayer(player1))
-$arenas.appendChild(createPlayer(player2))
+function enemyAttack() {
+    const hit = ATTACK[getRandom(3) - 1]
+    const defence = ATTACK[getRandom(3) - 1]
+    
+    return {
+        value: getRandom(HIT[hit]),
+        hit,
+        defence
+    }
+}
