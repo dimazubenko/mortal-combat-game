@@ -131,6 +131,7 @@ $form.addEventListener('submit', function(e) {
     const attack = {}
 
     for (let item of $form) {
+        
         if(item.checked && item.name === 'hit') {
             attack.value = getRandom(HIT[item.value])
             attack.hit = item.value
@@ -140,9 +141,13 @@ $form.addEventListener('submit', function(e) {
         }
         item.checked = false
     }
+    if(enemy.hit != attack.defence) {
+         player1.changeHP(attack.value)
+    } else
+        if(attack.hit != enemy.defence) {
+            player2.changeHP(enemy.value)
+        }
 
-    player1.changeHP(getRandom(20))
-    player2.changeHP(getRandom(20))
     player1.renderHP()
     player2.renderHP()
 
@@ -162,6 +167,7 @@ $form.addEventListener('submit', function(e) {
         }
     console.log('enemy', enemy)
     console.log('me', attack)
+    console.log(attack)
 })
 
 function enemyAttack() {
@@ -173,4 +179,8 @@ function enemyAttack() {
         hit,
         defence
     }
-}
+} 
+
+// if(player1 item.value === 'head' && player2 item.defence === 'head') {
+//     ничего
+// }
