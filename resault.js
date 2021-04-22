@@ -1,4 +1,5 @@
-import {player1, player2} from './player.js'
+// import {player1, player2} from './player.js'
+import {player1, player2} from './class.js'
 import {$form} from './attack.js'
 import createElement from './createElement.js'
 import generateLogs from './generateLogs.js'
