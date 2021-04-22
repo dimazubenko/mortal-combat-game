@@ -1,7 +1,6 @@
 import getRandom from './random.js'
-
 const $chat = document.querySelector('.chat')
-const time = new Date()
+
 const logs = {
     start: 'Часы показывали [time], когда [player1] и [player2] бросили вызов друг другу.',
     end: [
@@ -48,57 +47,55 @@ const addZero = (i) => {
     }
     return i
 }
-const hit = (type, player1, player2, damage) => {
-    const text = logs[type][getRandom(logs[type].length - 1)]
-        .replace('[playerKick]', player1.name)
-        .replace('[playerDefence]', player2.name)
-    const el = `<p>${addZero(time.getHours())}:${addZero(time.getMinutes())} - ${text} - ${damage} [${player2.hp}/100]</p>`
-    $chat.insertAdjacentHTML('afterbegin', el)
-}
-const startGame = (type, player1, player2) => {
-    const text = logs[type].replace('[time]', `${addZero(time.getHours())}:${addZero(time.getMinutes())}`)
-        .replace('[player1]', player1.name)
-        .replace('[player2]', player2.name)
-    const el = `<p style="color: red">${text}</p>`
-    $chat.insertAdjacentHTML('afterbegin', el)
-}
-const showDraw = (type) => {
-    const text = logs[type]
-    const el = `<p>${text}</p>`
-    $chat.insertAdjacentHTML('afterbegin', el)
-}
-const defence = (type, player1, player2) => {
-    const text = logs[type][getRandom(logs[type].length - 1)].replace('[playerKick]', player1.name).replace('[playerDefence]', player2.name)
-    const el = `<p>${text}</p>`
-    $chat.insertAdjacentHTML('afterbegin', el)
-}
-const end = (type, player1, player2) => {
-    const text = logs[type][getRandom(logs[type].length - 1)]
-        .replace('[playerWins]', player1.name)
-        .replace('[playerLose]', player2.name)
-    const el = `<p>${text}</p>`
-    $chat.insertAdjacentHTML('afterbegin', el)
+
+const getTime = () => {
+    const time = new Date()
+    return `${addZero(time.getHours())}:${addZero(time.getMinutes())}`
 }
 
-const generateLogs = (type, player1, player2, damage) => { 
-    const cond = type
-    switch(cond) {
-        case 'hit':
-            hit(type, player1, player2, damage)
-            break
+const getTextLog = (type, playerName1, playerName2) => {
+    switch(type) {
         case 'start':
-            startGame(type, player1, player2)
+            return logs[type]
+                .replace('[player1]', playerName1)
+                .replace('[player2]', playerName2)
+                .replace('[time]', getTime())
             break
-        case 'draw':
-            showDraw(type)
-            break
-        case 'end':
-            end(type, player1, player2)
+        case 'hit':
+            return logs[type][getRandom(logs[type].length - 1) - 1]
+                .replace('[playerKick]', playerName1)
+                .replace('[playerDefence]', playerName2)
             break
         case 'defence':
-            defence(type, player1, player2)
+            return logs[type][getRandom(logs[type].length - 1) - 1]
+                .replace('[playerKick]', playerName1)
+                .replace('[playerDefence]', playerName2)
+            break
+        case 'end':
+            return logs[type][getRandom(logs[type].length - 1) - 1]
+                .replace('[playerWins]', playerName1)
+                .replace('[playerLose]', playerName2)
+            break
+        case 'draw':
+            return logs[type][getRandom(logs[type].length - 1) - 1]
             break
     }
+}
+
+const generateLogs = (type, { name } = {}, { name: playerName2, hp} = {}, damage) => {
+    let text = getTextLog(type, name, playerName2)
+    switch(type) {
+        case 'hit':
+            text = `${addZero(getTime())} ${text} -${damage} [${hp}/100]`
+            break
+        case 'defence':
+        case 'end':
+        case 'draw':
+            text = `${text}`
+            break
+    }
+    const el = `<p>${text}</p>`
+    $chat.insertAdjacentHTML('afterbegin', el)
 }
 
 export default generateLogs
